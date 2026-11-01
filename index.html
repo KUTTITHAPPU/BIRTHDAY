@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Sona! 🎂✨</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sacramento&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FFF9F5',
+                        rose: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                        },
+                        peach: '#FFD8C9',
+                        lavender: '#E8DFF5',
+                        mint: '#E0F2FE'
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        handwriting: ['"Dancing Script"', 'cursive'],
+                        script: ['"Sacramento"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbar and animations */
+        html { scroll-behavior: smooth; }
+        
+        .bg-pattern {
+            background-color: #FFF9F5;
+            background-image: radial-gradient(#F43F5E 0.5px, transparent 0.5px), radial-gradient(#F43F5E 0.5px, #FFF9F5 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            background-opacity: 0.05;
+        }
+
+        /* Polaroid 3D perspective flip effect */
+        .polaroid-card {
+            perspective: 1000px;
+        }
+        .polaroid-inner {
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-style: preserve-3d;
+        }
+        .polaroid-card:hover .polaroid-inner, .polaroid-card.flipped .polaroid-inner {
+            transform: rotateY(180deg);
+        }
+        .polaroid-front, .polaroid-back {
+            backface-visibility: hidden;
+        }
+        .polaroid-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Candle Flame Animation */
+        @keyframes flameFlicker {
+            0%, 100% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+            50% { transform: scale(1.15) rotate(2deg); opacity: 1; filter: drop-shadow(0 0 12px #f97316); }
+        }
+        .flame-active {
+            animation: flameFlicker 1.2s infinite ease-in-out;
+            transform-origin: center bottom;
+        }
+
+        /* Floating Animation */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+        .animate-float {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+        
+        /* Floating Balloons background */
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0.8; }
+            100% { transform: translateY(-100px) rotate(20deg); opacity: 0; }
+        }
+        .balloon {
+            position: absolute;
+            bottom: -50px;
+            animation: floatUp 12s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-cream font-sans text-gray-800 antialiased overflow-x-hidden selection:bg-rose-200 selection:text-rose-700">
+
+    <!-- Floating Background Balloons Container -->
+    <div id="balloons-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
+
+    <!-- Audio Player Control (Fixed Floating Button) -->
+    <div class="fixed top-5 right-5 z-50">
+        <button id="music-btn" onclick="toggleMusic()" class="flex items-center gap-2 bg-white/90 backdrop-blur-md shadow-lg hover:shadow-xl text-rose-600 font-semibold py-2.5 px-4 rounded-full border border-rose-100 transition-all transform hover:scale-105 active:scale-95">
+            <i data-lucide="music" id="music-icon" class="w-5 h-5 animate-spin-slow"></i>
+            <span id="music-text" class="text-xs sm:text-sm">Play Bday Music</span>
+        </button>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-4 pt-16 pb-12 overflow-hidden bg-gradient-to-b from-rose-50/60 via-cream to-cream">
+        
+        <!-- Decorative Badge -->
+        <div class="inline-flex items-center gap-2 bg-rose-100/80 border border-rose-200/60 px-4 py-1.5 rounded-full mb-6 animate-bounce">
+            <span class="text-xl">✨</span>
+            <span class="text-xs sm:text-sm font-bold tracking-wide uppercase text-rose-600">Distance Means So Little</span>
+            <span class="text-xl">💖</span>
+        </div>
+
+        <h1 class="font-handwriting text-5xl sm:text-7xl md:text-8xl font-bold text-rose-500 mb-4 drop-shadow-sm leading-tight">
+            Happy Birthday, Sona chechiiii! 🎂
+        </h1>
+
+        <p class="max-w-2xl text-base sm:text-xl text-gray-600 font-medium leading-relaxed mb-8 px-4">
+            Even though miles separate us today, you're always right here in my heart. Here’s a little digital corner made just for you to celebrate your special day!
+        </p>
+
+        <!-- Main Interactive Blow Candles Feature Hero Card -->
+        <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-xl max-w-lg w-full relative z-10 border border-rose-100">
+            <h2 class="text-lg font-bold text-gray-700 mb-2 flex items-center justify-center gap-2">
+                <span>Make a Birthday Wish!</span>
+            </h2>
+            <p class="text-xs text-gray-500 mb-6">Click the candle or button below to blow out the flames & make your wish real!</p>
+
+            <!-- Virtual Mini Cake Display -->
+            <div class="relative w-48 h-40 mx-auto my-4 flex flex-col items-center justify-end">
+                <!-- Flames & Candles -->
+                <div class="flex justify-center gap-6 mb-1 z-20">
+                    <!-- Candle 1 -->
+                    <div class="flex flex-col items-center relative">
+                        <div id="flame-1" class="w-4 h-6 bg-gradient-to-t from-yellow-500 via-orange-400 to-amber-200 rounded-full flame-active shadow-md"></div>
+                        <div class="w-3 h-10 bg-gradient-to-r from-pink-300 via-rose-300 to-pink-400 rounded-t-sm shadow-inner"></div>
+                    </div>
+                    <!-- Candle 2 (Middle) -->
+                    <div class="flex flex-col items-center relative -mt-2">
+                        <div id="flame-2" class="w-4 h-6 bg-gradient-to-t from-yellow-500 via-orange-400 to-amber-200 rounded-full flame-active shadow-md"></div>
+                        <div class="w-3 h-12 bg-gradient-to-r from-purple-300 via-indigo-300 to-purple-400 rounded-t-sm shadow-inner"></div>
+                    </div>
+                    <!-- Candle 3 -->
+                    <div class="flex flex-col items-center relative">
+                        <div id="flame-3" class="w-4 h-6 bg-gradient-to-t from-yellow-500 via-orange-400 to-amber-200 rounded-full flame-active shadow-md"></div>
+                        <div class="w-3 h-10 bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-300 rounded-t-sm shadow-inner"></div>
+                    </div>
+                </div>
+
+                <!-- Cake Layers -->
+                <div class="w-40 h-10 bg-rose-300 rounded-t-xl border-b-4 border-rose-400 relative shadow-inner flex justify-around items-center px-2">
+                    <span class="w-2 h-2 rounded-full bg-white opacity-70"></span>
+                    <span class="w-2 h-2 rounded-full bg-white opacity-70"></span>
+                    <span class="w-2 h-2 rounded-full bg-white opacity-70"></span>
+                </div>
+                <div class="w-48 h-14 bg-amber-100 rounded-b-2xl border-t-2 border-amber-200 shadow-md relative overflow-hidden flex items-center justify-center">
+                    <div class="absolute inset-x-0 top-0 h-3 bg-rose-400 rounded-b-lg"></div>
+                    <span class="font-handwriting text-rose-500 text-lg font-bold mt-2">Best Sister Ever</span>
+                </div>
+            </div>
+
+            <!-- Blow Button -->
+            <button id="blow-btn" onclick="blowOutCandles()" class="w-full mt-4 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg hover:shadow-rose-300/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                <i data-lucide="wind" class="w-5 h-5"></i>
+                <span id="blow-btn-text">Blow Out Candles! 💨</span>
+            </button>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <a href="#countdown" class="mt-12 text-rose-400 hover:text-rose-600 transition-colors animate-bounce flex flex-col items-center gap-1 text-xs font-semibold">
+            <span>Scroll for your surprises</span>
+            <i data-lucide="chevron-down" class="w-5 h-5"></i>
+        </a>
+    </section>
+
+    <!-- Countdown & Interactive Cake Customizer Section -->
+    <section id="countdown" class="py-16 px-4 bg-white/60 relative z-10 border-y border-rose-100/50">
+        <div class="max-w-4xl mx-auto text-center">
+            
+            <h2 class="font-handwriting text-4xl sm:text-5xl font-bold text-rose-500 mb-3">Celebration Headquarters</h2>
+            <p class="text-sm text-gray-500 mb-8">Counting down every second of your special day!</p>
+
+            <!-- Countdown Timer Card Container -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto mb-14">
+                <div class="glass-card p-4 rounded-2xl border border-rose-100 shadow-sm">
+                    <span id="timer-days" class="text-3xl sm:text-4xl font-extrabold text-rose-500 block">00</span>
+                    <span class="text-xs uppercase font-semibold text-gray-500 tracking-wider">Days</span>
+                </div>
+                <div class="glass-card p-4 rounded-2xl border border-rose-100 shadow-sm">
+                    <span id="timer-hours" class="text-3xl sm:text-4xl font-extrabold text-rose-500 block">00</span>
+                    <span class="text-xs uppercase font-semibold text-gray-500 tracking-wider">Hours</span>
+                </div>
+                <div class="glass-card p-4 rounded-2xl border border-rose-100 shadow-sm">
+                    <span id="timer-minutes" class="text-3xl sm:text-4xl font-extrabold text-rose-500 block">00</span>
+                    <span class="text-xs uppercase font-semibold text-gray-500 tracking-wider">Minutes</span>
+                </div>
+                <div class="glass-card p-4 rounded-2xl border border-rose-100 shadow-sm">
+                    <span id="timer-seconds" class="text-3xl sm:text-4xl font-extrabold text-rose-500 block">00</span>
+                    <span class="text-xs uppercase font-semibold text-gray-500 tracking-wider">Seconds</span>
+                </div>
+            </div>
+
+            <!-- Virtual Cake Customizer Workshop -->
+            <div class="bg-gradient-to-r from-rose-50 via-pink-50 to-purple-50 p-6 sm:p-8 rounded-3xl border border-rose-200/70 shadow-sm max-w-2xl mx-auto">
+                <h3 class="text-xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+                    <span>Decorate Your Virtual Cake</span>
+                </h3>
+                <p class="text-xs text-gray-600 mb-6">Click buttons to throw sprinkles or light up the candles again!</p>
+
+                <!-- Interactive Decorate Cake Area -->
+                <div id="cake-workshop" class="relative w-56 h-48 mx-auto my-6 flex flex-col items-center justify-end select-none">
+                    <!-- Sprinkles Container (Populated via JS) -->
+                    <div id="sprinkles-layer" class="absolute inset-0 z-20 pointer-events-none"></div>
+
+                    <!-- Workshop Candles -->
+                    <div class="flex justify-center gap-5 mb-1 z-10">
+                        <div class="flex flex-col items-center">
+                            <div id="ws-flame-1" class="w-3.5 h-5 bg-gradient-to-t from-yellow-500 to-amber-200 rounded-full flame-active"></div>
+                            <div class="w-2.5 h-8 bg-pink-300 rounded-t"></div>
+                        </div>
+                        <div class="flex flex-col items-center -mt-1">
+                            <div id="ws-flame-2" class="w-3.5 h-5 bg-gradient-to-t from-yellow-500 to-amber-200 rounded-full flame-active"></div>
+                            <div class="w-2.5 h-9 bg-purple-300 rounded-t"></div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div id="ws-flame-3" class="w-3.5 h-5 bg-gradient-to-t from-yellow-500 to-amber-200 rounded-full flame-active"></div>
+                            <div class="w-2.5 h-8 bg-blue-300 rounded-t"></div>
+                        </div>
+                    </div>
+
+                    <!-- Cake Frosting Layer -->
+                    <div class="w-44 h-12 bg-pink-200 rounded-t-2xl border-b-4 border-pink-300 relative shadow-sm"></div>
+                    <!-- Main Cake Base -->
+                    <div class="w-52 h-16 bg-amber-100 rounded-b-2xl border-t-2 border-amber-200 shadow-md flex items-center justify-center">
+                        <span class="text-xs font-bold text-rose-400 uppercase tracking-widest">Sweet Sister</span>
+                    </div>
+                </div>
+
+                <!-- Cake Controls -->
+                <div class="flex flex-wrap gap-3 justify-center mt-6">
+                    <button onclick="addSprinkles()" class="bg-white hover:bg-rose-50 text-rose-600 font-semibold px-4 py-2 rounded-xl text-xs sm:text-sm border border-rose-200 shadow-sm transition-all flex items-center gap-1.5 active:scale-95">
+                        <i data-lucide="sparkle" class="w-4 h-4 text-amber-500"></i> Add Rainbow Sprinkles
+                    </button>
+                    <button onclick="toggleWorkshopCandles()" class="bg-white hover:bg-rose-50 text-rose-600 font-semibold px-4 py-2 rounded-xl text-xs sm:text-sm border border-rose-200 shadow-sm transition-all flex items-center gap-1.5 active:scale-95">
+                        <i data-lucide="flame" class="w-4 h-4 text-orange-500"></i> Toggle Flames
+                    </button>
+                    <button onclick="clearSprinkles()" class="bg-white hover:bg-rose-50 text-gray-500 font-semibold px-3 py-2 rounded-xl text-xs border border-gray-200 shadow-sm transition-all">
+                        Reset Cake
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Polaroid Photo & Memories Gallery -->
+    <section class="py-20 px-4 max-w-6xl mx-auto relative z-10">
+        <div class="text-center mb-14">
+            <span class="text-xs uppercase font-bold text-rose-500 tracking-widest bg-rose-100 px-3 py-1 rounded-full">Memory Lane</span>
+            <h2 class="font-handwriting text-4xl sm:text-6xl font-bold text-gray-800 mt-2">Favorite Snapshots & Moments</h2>
+            <p class="text-sm text-gray-500 mt-2">Tap or hover over each Polaroid frame to reveal the story behind it!</p>
+        </div>
+
+        <!-- Grid of Polaroid Flip Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-2">
+
+            <!-- Polaroid Card 1 -->
+            <div class="polaroid-card h-96 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                <div class="polaroid-inner w-full h-full relative rounded-2xl shadow-md border border-gray-100">
+                    <!-- Front Side -->
+                    <div class="polaroid-front absolute inset-0 bg-white p-4 flex flex-col justify-between rounded-2xl">
+                        <div class="w-full h-64 bg-rose-100 rounded-lg overflow-hidden relative flex items-center justify-center">
+                            <!-- SVG Placeholder Illustration -->
+                            <svg class="w-24 h-24 text-rose-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="absolute bottom-3 left-3 bg-white/80 backdrop-blur text-[10px] font-bold text-rose-600 px-2 py-0.5 rounded">Childhood Memories</span>
+                        </div>
+                        <div class="text-center pt-2">
+                            <p class="font-handwriting text-2xl text-gray-700">Partners in Crime 👯‍♀️</p>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-wider">Tap to flip</p>
+                        </div>
+                    </div>
+                    <!-- Back Side -->
+                    <div class="polaroid-back absolute inset-0 bg-gradient-to-br from-rose-400 to-pink-500 p-6 flex flex-col justify-center text-center text-white rounded-2xl shadow-lg">
+                        <i data-lucide="heart" class="w-8 h-8 text-white/80 mx-auto mb-3 animate-pulse"></i>
+                        <h4 class="font-handwriting text-3xl font-bold mb-2">Remember When?</h4>
+                        <p class="text-sm font-medium leading-relaxed opacity-95">
+                            From stealing each other's clothes to late-night secrets, you've been my best friend since day one!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Polaroid Card 2 -->
+            <div class="polaroid-card h-96 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                <div class="polaroid-inner w-full h-full relative rounded-2xl shadow-md border border-gray-100">
+                    <div class="polaroid-front absolute inset-0 bg-white p-4 flex flex-col justify-between rounded-2xl">
+                        <div class="w-full h-64 bg-purple-100 rounded-lg overflow-hidden relative flex items-center justify-center">
+                            <svg class="w-24 h-24 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="absolute bottom-3 left-3 bg-white/80 backdrop-blur text-[10px] font-bold text-purple-600 px-2 py-0.5 rounded">Uncontrollable Laughter</span>
+                        </div>
+                        <div class="text-center pt-2">
+                            <p class="font-handwriting text-2xl text-gray-700">Inside Jokes Forever 🤣</p>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-wider">Tap to flip</p>
+                        </div>
+                    </div>
+                    <div class="polaroid-back absolute inset-0 bg-gradient-to-br from-purple-400 to-indigo-500 p-6 flex flex-col justify-center text-center text-white rounded-2xl shadow-lg">
+                        <i data-lucide="laugh" class="w-8 h-8 text-white/80 mx-auto mb-3"></i>
+                        <h4 class="font-handwriting text-3xl font-bold mb-2">The Unstoppable Giggles</h4>
+                        <p class="text-sm font-medium leading-relaxed opacity-95">
+                            No one makes me laugh as hard as you do. We don't even need words—just one look and we break out laughing!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Polaroid Card 3 -->
+            <div class="polaroid-card h-96 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                <div class="polaroid-inner w-full h-full relative rounded-2xl shadow-md border border-gray-100">
+                    <div class="polaroid-front absolute inset-0 bg-white p-4 flex flex-col justify-between rounded-2xl">
+                        <div class="w-full h-64 bg-amber-100 rounded-lg overflow-hidden relative flex items-center justify-center">
+                            <svg class="w-24 h-24 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2v1.5a2.5 2.5 0 002.5 2.5h.5a2 2 0 012 2v1.865m-5.865-15.3A9 9 0 1118.065 18.065"></path>
+                            </svg>
+                            <span class="absolute bottom-3 left-3 bg-white/80 backdrop-blur text-[10px] font-bold text-amber-600 px-2 py-0.5 rounded">Distance Bridge</span>
+                        </div>
+                        <div class="text-center pt-2">
+                            <p class="font-handwriting text-2xl text-gray-700">Miles Apart, Hearts Together ✈️</p>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-wider">Tap to flip</p>
+                        </div>
+                    </div>
+                    <div class="polaroid-back absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-500 p-6 flex flex-col justify-center text-center text-white rounded-2xl shadow-lg">
+                        <i data-lucide="plane" class="w-8 h-8 text-white/80 mx-auto mb-3"></i>
+                        <h4 class="font-handwriting text-3xl font-bold mb-2">No Distance Too Far</h4>
+                        <p class="text-sm font-medium leading-relaxed opacity-95">
+                            Timezones and miles can't dim our bond. Can't wait until our next big reunion catch-up!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Interactive Memory Jar / Reasons Why You're Amazing Section -->
+    <section class="py-20 px-4 bg-gradient-to-b from-cream via-rose-50/50 to-cream relative z-10 border-t border-rose-100">
+        <div class="max-w-4xl mx-auto text-center">
+            
+            <span class="text-xs uppercase font-bold text-rose-500 tracking-widest bg-white px-3 py-1 rounded-full shadow-sm">Little Notes of Love</span>
+            <h2 class="font-handwriting text-4xl sm:text-6xl font-bold text-gray-800 mt-2 mb-3">The Reasons You're Amazing Jar 🫙</h2>
+            <p class="text-sm text-gray-500 mb-10">Click the jar to pull out a sweet reason why you are the best sister in the world!</p>
+
+            <div class="flex flex-col md:flex-row items-center justify-center gap-10">
+                <!-- Interactive Jar Visual -->
+                <div onclick="pullMemoryNote()" class="relative cursor-pointer group transform transition-transform hover:scale-105 active:scale-95">
+                    <!-- Glass Jar Graphic -->
+                    <div class="w-48 h-64 border-4 border-white/80 bg-white/40 backdrop-blur-md rounded-b-3xl rounded-t-xl relative shadow-xl flex flex-col items-center justify-end p-4 overflow-hidden">
+                        <!-- Jar Lid -->
+                        <div class="absolute top-0 w-36 h-6 bg-amber-200 border-2 border-amber-300 rounded-lg shadow-sm z-20 flex items-center justify-center">
+                            <div class="w-24 h-1 bg-amber-300 rounded-full"></div>
+                        </div>
+                        <!-- Paper Notes inside Jar -->
+                        <div class="flex flex-wrap justify-center gap-1.5 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
+                            <span class="w-8 h-6 bg-rose-300 rounded transform -rotate-12 shadow-sm block"></span>
+                            <span class="w-8 h-6 bg-yellow-200 rounded transform rotate-6 shadow-sm block"></span>
+                            <span class="w-8 h-6 bg-purple-300 rounded transform rotate-45 shadow-sm block"></span>
+                            <span class="w-8 h-6 bg-teal-200 rounded transform -rotate-45 shadow-sm block"></span>
+                            <span class="w-8 h-6 bg-pink-300 rounded transform rotate-12 shadow-sm block"></span>
+                            <span class="w-8 h-6 bg-amber-300 rounded transform -rotate-6 shadow-sm block"></span>
+                        </div>
+                        <!-- Jar Ribbon -->
+                        <div class="absolute top-8 inset-x-0 h-4 bg-rose-400 z-10 flex items-center justify-center">
+                            <span class="text-[10px] text-white font-bold tracking-widest uppercase">Open Me</span>
+                        </div>
+                    </div>
+                    <p class="mt-3 text-xs font-bold text-rose-500 uppercase tracking-wider group-hover:underline">👇 Tap Jar for a Note</p>
+                </div>
+
+                <!-- Display Note Area -->
+                <div id="note-display" class="glass-card p-6 sm:p-8 rounded-3xl border border-rose-200 shadow-md max-w-md w-full min-h-[200px] flex flex-col items-center justify-center text-center transition-all">
+                    <i data-lucide="heart-handshake" class="w-10 h-10 text-rose-400 mb-3 animate-bounce"></i>
+                    <p class="font-handwriting text-2xl sm:text-3xl text-gray-700 leading-snug">
+                        "Click the jar on the left to pick out your first memory note!"
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Digital Sister Coupon Book Section -->
+    <section class="py-20 px-4 max-w-5xl mx-auto relative z-10">
+        <div class="text-center mb-14">
+            <span class="text-xs uppercase font-bold text-rose-500 tracking-widest bg-rose-100 px-3 py-1 rounded-full">Redeem Anytime</span>
+            <h2 class="font-handwriting text-4xl sm:text-6xl font-bold text-gray-800 mt-2">Long-Distance Sister Coupons 🎟️</h2>
+            <p class="text-sm text-gray-500 mt-2">No expiration date! Click any coupon to claim & redeem it.</p>
+        </div>
+
+        <!-- Coupon Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+            <!-- Coupon 1 -->
+            <div id="coupon-1" class="glass-card rounded-2xl p-6 border-2 border-dashed border-rose-300 relative overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-rose-500 bg-rose-50 px-2.5 py-1 rounded-md">Coupon #01</span>
+                        <h3 class="text-xl font-bold text-gray-800 mt-2">1 Free 1 AM Rant Call 📞</h3>
+                        <p class="text-xs text-gray-600 mt-1">Valid anytime you need to talk, vent, or share gossip without any judgment.</p>
+                    </div>
+                    <div class="p-3 bg-rose-100 rounded-2xl text-rose-500">
+                        <i data-lucide="phone-call" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <div class="mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
+                    <span class="text-[11px] text-gray-400 font-medium">Expires: Never</span>
+                    <button onclick="redeemCoupon('coupon-1', '1 AM Rant Call')" class="coupon-btn bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs py-2 px-4 rounded-xl transition-all shadow-sm active:scale-95">
+                        Redeem Now ✨
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coupon 2 -->
+            <div id="coupon-2" class="glass-card rounded-2xl p-6 border-2 border-dashed border-purple-300 relative overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-purple-500 bg-purple-50 px-2.5 py-1 rounded-md">Coupon #02</span>
+                        <h3 class="text-xl font-bold text-gray-800 mt-2">Movie Night Choice 🍿</h3>
+                        <p class="text-xs text-gray-600 mt-1">You choose the movie during our next virtual watch party. Zero complaints allowed!</p>
+                    </div>
+                    <div class="p-3 bg-purple-100 rounded-2xl text-purple-500">
+                        <i data-lucide="tv" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <div class="mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
+                    <span class="text-[11px] text-gray-400 font-medium">Expires: Never</span>
+                    <button onclick="redeemCoupon('coupon-2', 'Movie Night Choice')" class="coupon-btn bg-purple-500 hover:bg-purple-600 text-white font-bold text-xs py-2 px-4 rounded-xl transition-all shadow-sm active:scale-95">
+                        Redeem Now ✨
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coupon 3 -->
+            <div id="coupon-3" class="glass-card rounded-2xl p-6 border-2 border-dashed border-amber-300 relative overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md">Coupon #03</span>
+                        <h3 class="text-xl font-bold text-gray-800 mt-2">No-Argument Pass 🕊️</h3>
+                        <p class="text-xs text-gray-600 mt-1">Instant victory for you in any lighthearted debate for an entire day!</p>
+                    </div>
+                    <div class="p-3 bg-amber-100 rounded-2xl text-amber-600">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <div class="mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
+                    <span class="text-[11px] text-gray-400 font-medium">Expires: Never</span>
+                    <button onclick="redeemCoupon('coupon-3', 'No-Argument Pass')" class="coupon-btn bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-2 px-4 rounded-xl transition-all shadow-sm active:scale-95">
+                        Redeem Now ✨
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coupon 4 -->
+            <div id="coupon-4" class="glass-card rounded-2xl p-6 border-2 border-dashed border-teal-300 relative overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-teal-600 bg-teal-50 px-2.5 py-1 rounded-md">Coupon #04</span>
+                        <h3 class="text-xl font-bold text-gray-800 mt-2">Emergency Pep Talk ☕</h3>
+                        <p class="text-xs text-gray-600 mt-1">Feeling down? Instant 15-minute hype call to remind you how awesome you are.</p>
+                    </div>
+                    <div class="p-3 bg-teal-100 rounded-2xl text-teal-600">
+                        <i data-lucide="coffee" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <div class="mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
+                    <span class="text-[11px] text-gray-400 font-medium">Expires: Never</span>
+                    <button onclick="redeemCoupon('coupon-4', 'Emergency Pep Talk')" class="coupon-btn bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs py-2 px-4 rounded-xl transition-all shadow-sm active:scale-95">
+                        Redeem Now ✨
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer Message -->
+    <footer class="py-12 text-center text-gray-500 text-xs border-t border-rose-100 bg-white/40 relative z-10">
+        <p class="font-handwriting text-2xl text-rose-500 mb-1">Made with endless love for the best sister ever ❤️</p>
+        <p>© Happy Birthday Celebration Website</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        /* ================= MUSIC PLAYER (Web Audio API Synthesizer) ================= */
+        let audioCtx = null;
+        let isPlayingMusic = false;
+        let songTimer = null;
+
+        // Simple upbeat melody notes (Freqs in Hz)
+        const melody = [
+            { note: 261.63, duration: 0.3 }, // C4
+            { note: 261.63, duration: 0.3 }, // C4
+            { note: 293.66, duration: 0.6 }, // D4
+            { note: 261.63, duration: 0.6 }, // C4
+            { note: 349.23, duration: 0.6 }, // F4
+            { note: 329.63, duration: 1.0 }, // E4
+            
+            { note: 261.63, duration: 0.3 }, // C4
+            { note: 261.63, duration: 0.3 }, // C4
+            { note: 293.66, duration: 0.6 }, // D4
+            { note: 261.63, duration: 0.6 }, // C4
+            { note: 392.00, duration: 0.6 }, // G4
+            { note: 349.23, duration: 1.0 }, // F4
+        ];
+
+        function playNote(freq, duration) {
+            if (!audioCtx || !isPlayingMusic) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'triangle'; // Soft acoustic warm tone
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) { console.error(e); }
+        }
+
+        function startMelodyLoop() {
+            let index = 0;
+            function step() {
+                if (!isPlayingMusic) return;
+                const current = melody[index];
+                playNote(current.note, current.duration);
+                index = (index + 1) % melody.length;
+                songTimer = setTimeout(step, current.duration * 750);
+            }
+            step();
+        }
+
+        function toggleMusic() {
+            const btnText = document.getElementById('music-text');
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            if (!isPlayingMusic) {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                isPlayingMusic = true;
+                btnText.innerText = "Pause Bday Music";
+                startMelodyLoop();
+            } else {
+                isPlayingMusic = false;
+                clearTimeout(songTimer);
+                btnText.innerText = "Play Bday Music";
+            }
+        }
+
+        /* ================= CANDLE BLOWING & CONFETTI ================= */
+        let candlesBlown = false;
+
+        function blowOutCandles() {
+            const flames = ['flame-1', 'flame-2', 'flame-3'];
+            const btnText = document.getElementById('blow-btn-text');
+
+            flames.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+                    el.style.opacity = "0";
+                    el.style.transform = "scale(0)";
+                }
+            });
+
+            // Trigger Confetti Burst
+            confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+
+            btnText.innerText = "Wish Made! ✨ 🎉";
+            candlesBlown = true;
+        }
+
+        /* ================= WORKSHOP CAKE CUSTOMIZER ================= */
+        let wsCandlesOn = true;
+
+        function addSprinkles() {
+            const layer = document.getElementById('sprinkles-layer');
+            const colors = ['#f43f5e', '#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'];
+
+            for (let i = 0; i < 8; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'absolute rounded-full shadow-sm';
+                dot.style.width = Math.random() * 6 + 4 + 'px';
+                dot.style.height = dot.style.width;
+                dot.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                dot.style.left = Math.random() * 80 + 10 + '%';
+                dot.style.top = Math.random() * 40 + 50 + '%';
+                layer.appendChild(dot);
+            }
+        }
+
+        function clearSprinkles() {
+            document.getElementById('sprinkles-layer').innerHTML = '';
+        }
+
+        function toggleWorkshopCandles() {
+            wsCandlesOn = !wsCandlesOn;
+            ['ws-flame-1', 'ws-flame-2', 'ws-flame-3'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.opacity = wsCandlesOn ? '1' : '0';
+            });
+        }
+
+        /* ================= MEMORY JAR NOTES ================= */
+        const memoryNotes = [
+            "Your infectious smile always brightens up my worst days!",
+            "Thank you for being the one person who always gets my jokes.",
+            "You are incredibly strong, resilient, and inspiring every day.",
+            "Remember our late-night talks? Best memories of my life!",
+            "You have the kindest heart of anyone I know.",
+            "No matter how far apart we are, you'll always be my best friend!"
+        ];
+        let lastNoteIndex = -1;
+
+        function pullMemoryNote() {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * memoryNotes.length);
+            } while (randomIndex === lastNoteIndex);
+            
+            lastNoteIndex = randomIndex;
+            const display = document.getElementById('note-display');
+            
+            display.style.transform = "scale(0.95)";
+            display.style.opacity = "0.7";
+
+            setTimeout(() => {
+                display.innerHTML = `
+                    <i data-lucide="sparkles" class="w-8 h-8 text-amber-400 mb-2 animate-spin-slow"></i>
+                    <p class="font-handwriting text-2xl sm:text-3xl text-rose-600 leading-snug">
+                        "${memoryNotes[randomIndex]}"
+                    </p>
+                `;
+                lucide.createIcons();
+                display.style.transform = "scale(1)";
+                display.style.opacity = "1";
+            }, 200);
+
+            confetti({ particleCount: 35, spread: 50, origin: { y: 0.7 } });
+        }
+
+        /* ================= COUPON REDEEM SYSTEM ================= */
+        function redeemCoupon(couponId, title) {
+            const card = document.getElementById(couponId);
+            const btn = card.querySelector('.coupon-btn');
+
+            card.classList.add('bg-emerald-50/80', 'border-emerald-300');
+            btn.innerText = "Redeemed! ✅";
+            btn.classList.remove('bg-rose-500', 'bg-purple-500', 'bg-amber-500', 'bg-teal-500');
+            btn.classList.add('bg-emerald-600');
+            btn.disabled = true;
+
+            confetti({
+                particleCount: 70,
+                spread: 60,
+                origin: { y: 0.8 }
+            });
+        }
+
+        /* ================= COUNTDOWN TIMER ================= */
+        function updateTimer() {
+            // Set target date for celebration
+            const now = new Date();
+            const target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const diff = target - now;
+
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const m = Math.floor((diff / 1000 / 60) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('timer-days').innerText = String(d).padStart(2, '0');
+            document.getElementById('timer-hours').innerText = String(h).padStart(2, '0');
+            document.getElementById('timer-minutes').innerText = String(m).padStart(2, '0');
+            document.getElementById('timer-seconds').innerText = String(s).padStart(2, '0');
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        /* ================= FLOATING BACKGROUND BALLOONS ================= */
+        function createBalloons() {
+            const container = document.getElementById('balloons-container');
+            const colors = ['#fecdd3', '#e8dff5', '#ffd8c9', '#e0f2fe'];
+            
+            for (let i = 0; i < 12; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon rounded-full opacity-60';
+                balloon.style.width = Math.random() * 40 + 30 + 'px';
+                balloon.style.height = parseFloat(balloon.style.width) * 1.25 + 'px';
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.left = Math.random() * 95 + '%';
+                balloon.style.animationDelay = Math.random() * 8 + 's';
+                balloon.style.animationDuration = Math.random() * 6 + 10 + 's';
+                container.appendChild(balloon);
+            }
+        }
+        window.addEventListener('load', createBalloons);
+    </script>
+</body>
+</html>
